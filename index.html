@@ -285,7 +285,7 @@ table{width:100%;border-collapse:collapse}
   </div>
   <div class="content">
     <div class="assignmentToolbar">
-      <div class="tip"><b>Asignación automática:</b> las personas aparecen según el turno definido arriba. Aquí solo selecciona el puesto de cada una.</div>
+      <div class="tip"><b>✓ ASIGNACIÓN AUTOMÁTICA ACTIVA:</b> los nombres y turnos se cargan desde el horario de arriba. Aquí únicamente selecciona el puesto.</div>
     </div>
     <div class="daysGrid" id="daysGrid"></div>
     <div class="roleNote"><span><b>Caja</b> · cobros</span><span><b>Bar</b> · bebidas</span><span><b>Salón</b> · servicio a mesas</span></div>
@@ -307,7 +307,7 @@ table{width:100%;border-collapse:collapse}
 </div>
 
 <script>
-const INITIAL = {"employees": [], "assignments": [{"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}]};
+const INITIAL = {"employees": [], "assignments": [{"morning": [], "afternoon": [], "mid": []}, {"morning": [], "afternoon": [], "mid": []}, {"morning": [], "afternoon": [], "mid": []}, {"morning": [], "afternoon": [], "mid": []}, {"morning": [], "afternoon": [], "mid": []}, {"morning": [], "afternoon": [], "mid": []}, {"morning": [], "afternoon": [], "mid": []}]};
 const KEY = "sodaSanchezDynamicButtonsFixed_20260911_v3";
 const SHIFT_STATES = ["06:00 AM a 02:00 PM","02:00 PM a 10:00 PM","11:00 AM a 07:00 PM","LIBRE","VACACIONES","PSG"];
 const ROLES = ["Caja","Bar","Salón","Caja / Bar","Apoyo"];
@@ -937,5 +937,6 @@ const INITIAL_STATE_OVERRIDE = null;
 })();
 </script>
 <div id="buildVersion" style="display:none">SODA_BUTTONS_FIXED_20260911_V3</div>
+<div id="autoSyncBuild" style="display:none">AUTO_SYNC_BUILD_20260911</div>
 </body>
 </html>
