@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Soda Sánchez · Horario Semanal Editable</title>
@@ -109,10 +112,14 @@ table{width:100%;border-collapse:collapse}
 .shiftCell.s2{background:var(--ivory)!important;color:#171614}
 .shiftCell.free{background:var(--rose)!important;color:white}
 .shiftCell.psg{background:var(--sage)!important;color:white}
-.shiftCell:has(option[value="06:00 a 02:00"]:checked){background:var(--champ)!important;color:#171614}
-.shiftCell:has(option[value="02:00 a 10:00"]:checked){background:var(--ivory)!important;color:#171614}
+.shiftCell.s3{background:#C6B2D8!important;color:#171614}
+.shiftCell.vac{background:#93B7D1!important;color:#171614}
+.shiftCell:has(option[value="06:00 AM a 02:00 PM"]:checked){background:var(--champ)!important;color:#171614}
+.shiftCell:has(option[value="02:00 PM a 10:00 PM"]:checked){background:var(--ivory)!important;color:#171614}
 .shiftCell:has(option[value="LIBRE"]:checked){background:var(--rose)!important;color:white}
 .shiftCell:has(option[value="PSG"]:checked){background:var(--sage)!important;color:white}
+.shiftCell:has(option[value="11:00 AM a 07:00 PM"]:checked){background:#C6B2D8!important;color:#171614}
+.shiftCell:has(option[value="VACACIONES"]:checked){background:#93B7D1!important;color:#171614}
 .shiftCell::before{
   content:attr(data-label);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   padding:8px 21px 8px 7px;white-space:pre-line;text-align:center;line-height:1.15;font-size:16px;
@@ -150,9 +157,14 @@ table{width:100%;border-collapse:collapse}
 .dayTitle{
   background:#191919;color:#ffffff;padding:12px 14px;font-weight:900;letter-spacing:.5px;font-size:18px
 }
-.shiftGrid{display:grid;grid-template-columns:1fr 1fr}
+.shiftGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 .shiftBlock{padding:12px;border-right:1px solid #d8c3a1}
 .shiftBlock:last-child{border-right:0}
+
+.shiftBlock:nth-child(1){background:#F4E8CF}
+.shiftBlock:nth-child(2){background:#F2EEE6}
+.shiftBlock:nth-child(3){background:#EAE3F0}
+
 .shiftHead{
   display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;
   font-weight:900;color:#5b472c;font-size:16px
@@ -244,10 +256,12 @@ table{width:100%;border-collapse:collapse}
       </table>
     </div>
     <div class="legend">
-      <span class="legendItem"><i class="sw" style="background:#ddb875"></i>06:00 a 02:00</span>
-      <span class="legendItem"><i class="sw" style="background:#f1e8d8"></i>02:00 a 10:00</span>
-      <span class="legendItem"><i class="sw" style="background:#c9a5aa"></i>LIBRE</span>
-      <span class="legendItem"><i class="sw" style="background:#a7b09a"></i>PSG</span>
+      <span class="legendItem"><i class="sw" style="background:#D9B36C"></i>06:00 AM a 02:00 PM</span>
+      <span class="legendItem"><i class="sw" style="background:#F4E8CF"></i>02:00 PM a 10:00 PM</span>
+      <span class="legendItem"><i class="sw" style="background:#C6B2D8"></i>11:00 AM a 07:00 PM</span>
+      <span class="legendItem"><i class="sw" style="background:#D7A3AD"></i>LIBRE</span>
+      <span class="legendItem"><i class="sw" style="background:#93B7D1"></i>VACACIONES</span>
+      <span class="legendItem"><i class="sw" style="background:#9EB792"></i>PSG</span>
     </div>
     <div class="reminder">Presentarse 10 minutos antes del inicio del turno.</div>
   </div>
@@ -286,8 +300,8 @@ table{width:100%;border-collapse:collapse}
 
 <script>
 const INITIAL = {"employees": [], "assignments": [{"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}, {"morning": [], "afternoon": []}]};
-const KEY = "sodaSanchezDynamicV14";
-const SHIFT_STATES = ["06:00 a 02:00","02:00 a 10:00","LIBRE","PSG"];
+const KEY = "sodaSanchezDynamicButtonsFixed_20260911_v3";
+const SHIFT_STATES = ["06:00 AM a 02:00 PM","02:00 PM a 10:00 PM","11:00 AM a 07:00 PM","LIBRE","VACACIONES","PSG"];
 const ROLES = ["Caja","Bar","Salón","Caja / Bar","Apoyo"];
 const DAY_NAMES = ["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"];
 const FULL_DAY_NAMES = ["LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO","DOMINGO"];
@@ -303,10 +317,18 @@ function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch]));
 }
 function shiftClass(v) {
-  return v==="06:00 a 02:00" ? "s1" : v==="02:00 a 10:00" ? "s2" : v==="LIBRE" ? "free" : "psg";
+  if(v==="06:00 AM a 02:00 PM") return "s1";
+  if(v==="02:00 PM a 10:00 PM") return "s2";
+  if(v==="11:00 AM a 07:00 PM") return "s3";
+  if(v==="LIBRE") return "free";
+  if(v==="VACACIONES") return "vac";
+  return "psg";
 }
 function shiftLabel(v) {
-  return v==="06:00 a 02:00" ? "06:00\na 02:00" : v==="02:00 a 10:00" ? "02:00\na 10:00" : v;
+  if(v==="06:00 AM a 02:00 PM") return "06:00\na 02:00";
+  if(v==="02:00 PM a 10:00 PM") return "02:00\na 10:00";
+  if(v==="11:00 AM a 07:00 PM") return "11:00\na 07:00";
+  return v;
 }
 function setStatus(msg) {
   const el=document.getElementById("status");
@@ -381,7 +403,7 @@ function renderSchedule() {
       deleteBtn.setAttribute("aria-label",`Eliminar a ${newName}`);
       if(oldName!==newName){
         state.assignments.forEach(day=>{
-          ["morning","afternoon"].forEach(key=>{
+          ["morning","afternoon","mid"].forEach(key=>{
             day[key].forEach(a=>{ if(a.employee===oldName) a.employee=newName; });
           });
         });
@@ -433,7 +455,7 @@ function removeEmployee(index) {
   if(!confirm(`¿Eliminar a ${name} del horario?`))return;
   state.employees.splice(index,1);
   // Keep assignment rows but blank any deleted employee.
-  state.assignments.forEach(day=>["morning","afternoon"].forEach(key=>day[key].forEach(a=>{if(a.employee===name)a.employee="";})));
+  state.assignments.forEach(day=>["morning","afternoon","mid"].forEach(key=>day[key].forEach(a=>{if(a.employee===name)a.employee="";})));
   renderSchedule(); renderAssignments(); persist(); setStatus("Empleado eliminado.");
 }
 
@@ -466,7 +488,7 @@ function renderAssignments() {
     card.appendChild(title);
 
     const sg=document.createElement("div");sg.className="shiftGrid";
-    [["morning","06:00 a 02:00"],["afternoon","02:00 a 10:00"]].forEach(([key,label])=>{
+    [["morning","06:00 AM a 02:00 PM"],["afternoon","02:00 PM a 10:00 PM"],["mid","11:00 AM a 07:00 PM"]].forEach(([key,label])=>{
       const block=document.createElement("div");block.className="shiftBlock";
       const head=document.createElement("div");head.className="shiftHead";
       head.innerHTML=`<span>${label}</span>`;
@@ -532,10 +554,25 @@ function resetAll() {
   if(!confirm("¿Restaurar la plantilla original completa?"))return;
   state={date:"2026-08-31",employees:deepCopy(INITIAL.employees),assignments:deepCopy(INITIAL.assignments)};
   try{localStorage.removeItem(KEY)}catch(e){}
+  ensureAssignmentStructure();
   document.getElementById("weekStart").value=state.date;
   renderAll();setStatus("Plantilla restaurada.");
 }
+
+function ensureAssignmentStructure() {
+  if(!Array.isArray(state.assignments)) state.assignments=[];
+  while(state.assignments.length<7){
+    state.assignments.push({morning:[],afternoon:[],mid:[]});
+  }
+  state.assignments=state.assignments.slice(0,7).map(day=>({
+    morning:Array.isArray(day.morning)?day.morning:[],
+    afternoon:Array.isArray(day.afternoon)?day.afternoon:[],
+    mid:Array.isArray(day.mid)?day.mid:[]
+  }));
+}
+
 function renderAll() {
+  ensureAssignmentStructure();
   document.getElementById("weekStart").value=state.date;
   renderSchedule();renderAssignments();updateWeek(false);
 }
@@ -563,7 +600,12 @@ function drawFooter(ctx,y,w) {
   ctx.fillStyle="#d8d8d4";ctx.font='700 12px Arial';ctx.fillText("COMIDA TÍPICA · QUEPOS, COSTA RICA",w/2,y+61);
 }
 function shiftColors(v) {
-  return v==="06:00 a 02:00"?["#ddb875","#171614"]:v==="02:00 a 10:00"?["#f1e8d8","#171614"]:v==="LIBRE"?["#c9a5aa","#fff"]:["#a7b09a","#fff"];
+  if(v==="06:00 AM a 02:00 PM") return ["#D9B36C","#171614"];
+  if(v==="02:00 PM a 10:00 PM") return ["#F4E8CF","#171614"];
+  if(v==="11:00 AM a 07:00 PM") return ["#C6B2D8","#171614"];
+  if(v==="LIBRE") return ["#D7A3AD","#ffffff"];
+  if(v==="VACACIONES") return ["#93B7D1","#171614"];
+  return ["#9EB792","#ffffff"];
 }
 function renderScheduleCanvas() {
   syncStateFromDOM();
@@ -593,7 +635,7 @@ function renderScheduleCanvas() {
       ctx.fillStyle=pal[0];ctx.fillRect(xx,y,colW,rowH);
       ctx.fillStyle=pal[1];
       if(v.includes(" a ")){
-        ctx.font="900 18px Arial";
+        ctx.font="900 16px Arial";
         const z=v.split(" a ");
         ctx.fillText(z[0],xx+colW/2,y+rowH/2-12);
         ctx.fillText("a "+z[1],xx+colW/2,y+rowH/2+13);
@@ -622,9 +664,13 @@ function renderScheduleCanvas() {
   return c;
 }
 function renderAssignmentsCanvas() {
+  ensureAssignmentStructure();
+
   const lineH = 54;
   const top = 300, footerH = 86;
-  const dayHeights = state.assignments.map(d => Math.max(2, d.morning.length, d.afternoon.length) * lineH + 66);
+  const dayHeights = state.assignments.map(d =>
+    Math.max(2, d.morning.length, d.afternoon.length, d.mid.length) * lineH + 66
+  );
   const contentH = dayHeights.reduce((a,b)=>a+b,0);
   const gaps = Math.max(0, state.assignments.length - 1) * 10;
   const cardsBottom = top + contentH + gaps;
@@ -633,39 +679,61 @@ function renderAssignmentsCanvas() {
   const height = footerTop + footerH;
 
   const c = makeCanvas(1080,height), ctx = c.getContext("2d");
-  ctx.fillStyle="#f8f1e7"; ctx.fillRect(0,0,1080,height);
+  ctx.fillStyle="#f8f1e7";
+  ctx.fillRect(0,0,1080,height);
   drawHeader(ctx,"ASIGNACIÓN DE PUESTOS",document.getElementById("range2").textContent,1080);
 
-  const x=45, w=990; let y=top;
+  const x=30,w=1020;
+  const colW=w/3;
+  let y=top;
   const p=parseDateParts(state.date);
 
   state.assignments.forEach((day,di)=>{
-    const hgt=dayHeights[di], d=utcDate(p,di), title=`${FULL_DAY_NAMES[di]} ${String(d.getUTCDate()).padStart(2,"0")}`;
-    ctx.fillStyle="#191919"; ctx.fillRect(x,y,w,46);
-    ctx.fillStyle="#ffffff"; ctx.textAlign="left"; ctx.textBaseline="middle"; ctx.font="900 22px Arial";
+    const hgt=dayHeights[di];
+    const d=utcDate(p,di);
+    const title=`${FULL_DAY_NAMES[di]} ${String(d.getUTCDate()).padStart(2,"0")}`;
+
+    ctx.fillStyle="#191919";
+    ctx.fillRect(x,y,w,46);
+    ctx.fillStyle="#ffffff";
+    ctx.textAlign="left";
+    ctx.textBaseline="middle";
+    ctx.font="900 22px Arial";
     ctx.fillText(title,x+15,y+23);
 
-    const colW=w/2;
-    ctx.fillStyle="#f4e5ce"; ctx.fillRect(x,y+46,colW,hgt-46);
-    ctx.fillStyle="#f8efe2"; ctx.fillRect(x+colW,y+46,colW,hgt-46);
+    const fills=["#F4E8CF","#F2EEE6","#EAE3F0"];
+    const labels=["06:00 AM a 02:00 PM","02:00 PM a 10:00 PM","11:00 AM a 07:00 PM"];
+    const keys=["morning","afternoon","mid"];
 
-    ctx.fillStyle="#5c472b"; ctx.font="900 18px Arial";
-    ctx.fillText("06:00 a 02:00",x+14,y+72);
-    ctx.fillText("02:00 a 10:00",x+colW+14,y+72);
+    for(let ci=0;ci<3;ci++){
+      const cx=x+ci*colW;
+      ctx.fillStyle=fills[ci];
+      ctx.fillRect(cx,y+46,colW,hgt-46);
 
-    [["morning",x],["afternoon",x+colW]].forEach(([key,cx])=>{
-      day[key].forEach((a,ai)=>{
+      ctx.fillStyle="#4C4033";
+      ctx.font="900 15px Arial";
+      ctx.fillText(labels[ci],cx+12,y+72);
+
+      day[keys[ci]].forEach((a,ai)=>{
         const yy=y+108+ai*lineH;
-        ctx.fillStyle="#241f19"; ctx.font="900 16px Arial";
-        const txt = `${a.employee||"—"} · ${a.role||"—"}`;
-        ctx.fillText(txt,cx+14,yy);
+        ctx.fillStyle="#241f19";
+        ctx.font="900 15px Arial";
+        const txt=`${a.employee||"—"} · ${a.role||"—"}`;
+        ctx.fillText(txt,cx+12,yy);
       });
-    });
 
-    ctx.strokeStyle="#d2bb93";
+      if(ci>0){
+        ctx.strokeStyle="#D2BB93";
+        ctx.beginPath();
+        ctx.moveTo(cx,y+46);
+        ctx.lineTo(cx,y+hgt);
+        ctx.stroke();
+      }
+    }
+
+    ctx.strokeStyle="#D2BB93";
     ctx.strokeRect(x,y,w,hgt);
-    ctx.beginPath(); ctx.moveTo(x+colW,y+46); ctx.lineTo(x+colW,y+hgt); ctx.stroke();
-    y += hgt + 10;
+    y+=hgt+10;
   });
 
   ctx.fillStyle="#42372a";
@@ -769,9 +837,11 @@ const INITIAL_STATE_OVERRIDE = null;
   try{saved=JSON.parse(localStorage.getItem(KEY));}catch(e){}
   if(INITIAL_STATE_OVERRIDE) state=deepCopy(INITIAL_STATE_OVERRIDE);
   else if(saved && saved.employees && saved.assignments) state=saved;
+  ensureAssignmentStructure();
   document.getElementById("weekStart").value=state.date;
   renderAll();
 })();
 </script>
+<div id="buildVersion" style="display:none">SODA_BUTTONS_FIXED_20260911_V3</div>
 </body>
 </html>
